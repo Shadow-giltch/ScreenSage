@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react'
-import Search from './components/search'
-import Spinner from './components/spinner'
-import MovieCard from './components/Moviecard'
+import Search from './components/Search'
+import Spinner from './components/Spinner'
+import MovieCard from './components/MovieCard'
 
 
 const API_BASE_URL = 'https://www.omdbapi.com';
