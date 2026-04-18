@@ -1,6 +1,8 @@
 import React, { useState,useEffect } from 'react'
 import Search from './components/search'
-import { use } from 'react';
+import Spinner from './components/spinner'
+import MovieCard from './components/Moviecard'
+
 
 const API_BASE_URL = 'https://www.omdbapi.com';
 
@@ -13,7 +15,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchMovies = async (query = "the") => {
-    isLoading(true);
+    setIsLoading(true);
     setErrorMessage('');
     try {
       const endpoint = `${API_BASE_URL}/?apikey=${API_KEY}&s=${query}&type=movie`;
@@ -27,12 +29,21 @@ const App = () => {
       const data = await response.json();
 
       if (data.Response === "False") {
-        setErrorMessage(data.error|| 'No movies found')
+        setErrorMessage(data.Error|| 'No movies found');
         setMoviesList([]);
         return;
       }
 
-      setMoviesList(data.Search||[]);
+      const moviesWithRatings = await Promise.all(
+        data.Search.map(async (movie) => {
+          const res = await fetch(
+            `${API_BASE_URL}/?apikey=${API_KEY}&i=${movie.imdbID}`
+          );
+          return await res.json();
+        })
+      );
+
+      setMoviesList(moviesWithRatings);
     } catch (error) {
     
       setErrorMessage('Failed to fetch movies. Please try again later.');
@@ -44,8 +55,17 @@ const App = () => {
   
 
   useEffect(() => {
-    fetchMovies(searchTerm || "avengers");
-  },[searchTerm]);
+    const debounceTimer = setTimeout(()=> {
+      if (searchTerm.trim() === '') {
+        fetchMovies("mercy");
+      } else {
+        fetchMovies(searchTerm);
+      }
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm]);
+
   return (
     <main className="min-h-screen relative bg-primary bg-hero-pattern bg-cover bg-center bg-no-repeat">
       
@@ -57,15 +77,15 @@ const App = () => {
         </header>
 
         <section className="all-movies">
-          <h2>All Movies</h2>
+          <h2 className="mt-10">All Movies</h2>
           {isLoading ?  (
-            <p className="text-white ">Loading......</p>
+            <Spinner/>
           ) : errorMessage ? (
             <p className="text-red-500">{errorMessage}</p>
           ): (
             <ul>
               {moviesList.map((movie) => (
-                <p key={movie.imdbID} className="text-white">{movie.Title}</p>
+                <MovieCard key={movie.imdbID} movie={movie}/>
               ))}
             </ul>
           )}
