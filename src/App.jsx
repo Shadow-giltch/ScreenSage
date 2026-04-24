@@ -57,7 +57,7 @@ const App = () => {
   useEffect(() => {
     const debounceTimer = setTimeout(()=> {
       if (searchTerm.trim() === '') {
-        fetchMovies("mercy");
+        fetchMovies("fast");
       } else {
         fetchMovies(searchTerm);
       }

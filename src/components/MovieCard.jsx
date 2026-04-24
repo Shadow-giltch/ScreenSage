@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Moviecard = ({ movie: { Title, Poster, Year, imdbID, imdbRating } }) => {
+const Moviecard = ({ movie: { Title, Poster, Year, imdbID, imdbRating, Language } }) => {
   return (
     <div className="movie-card">
         <img 
@@ -16,6 +16,13 @@ const Moviecard = ({ movie: { Title, Poster, Year, imdbID, imdbRating } }) => {
               </div>
 
               <span>•</span>
+
+              <p className="year">{ Year || 'N/A' }</p>
+
+
+              <span>•</span>
+
+              <p className="lang">{Language}</p>
 
             </div>
         </div>
